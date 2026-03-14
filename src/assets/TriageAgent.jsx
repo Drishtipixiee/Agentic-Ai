@@ -133,19 +133,30 @@ export default function TriageAgent({ user, onLogout }) {
           </div>
         </div>
 
-        {/* Anomalies List */}
-        <div className="card">
-          <div className="card-header"><span className="card-title">Detected Physiological Anomalies</span></div>
-          <div className="card-body" style={{ display:"flex", flexWrap:"wrap", gap:10 }}>
-            {triageData?.anomalies?.length > 0 ? triageData.anomalies.map((a,i) => (
-              <div key={i} style={{ padding:"10px 16px", borderRadius:10, background:"#FFFBEB", border:"1.5px solid #FEF3C7", color:"#92400E", fontSize:"0.8rem", fontWeight:600, display:"flex", alignItems:"center", gap:8 }}>
-                <span style={{ fontSize:"1rem" }}>⚠</span> {a}
-              </div>
-            )) : (
-              <div style={{ padding:"10px 16px", borderRadius:10, background:"#F0FDF4", border:"1.5px solid #DCFCE7", color:"#166534", fontSize:"0.8rem", fontWeight:600, display:"flex", alignItems:"center", gap:8 }}>
-                <span style={{ fontSize:"1rem" }}>✓</span> No active anomalies detected by TriageAgent.
-              </div>
-            )}
+        {/* Anomalies & Orchestration */}
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 400px", gap:16 }}>
+          <div className="card">
+            <div className="card-header"><span className="card-title">Detected Physiological Anomalies</span></div>
+            <div className="card-body" style={{ display:"flex", flexWrap:"wrap", gap:10 }}>
+              {triageData?.anomalies?.length > 0 ? triageData.anomalies.map((a,i) => (
+                <div key={i} style={{ padding:"10px 16px", borderRadius:10, background:"#FFFBEB", border:"1.5px solid #FEF3C7", color:"#92400E", fontSize:"0.8rem", fontWeight:600, display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:"1rem" }}>⚠</span> {a}
+                </div>
+              )) : (
+                <div style={{ padding:"10px 16px", borderRadius:10, background:"#F0FDF4", border:"1.5px solid #DCFCE7", color:"#166534", fontSize:"0.8rem", fontWeight:600, display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:"1rem" }}>✓</span> No active anomalies detected by TriageAgent.
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="card" style={{ background:"#0F172A", border:"none" }}>
+            <div className="card-header" style={{ background:"none", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
+              <span className="card-title" style={{ color:"white" }}>🕵 Triage Reasoning</span>
+            </div>
+            <div className="card-body" style={{ color:"#94A3B8", fontSize:"0.82rem", lineHeight:1.6, padding:"12px" }}>
+              <div style={{ color:"#F59E0B", fontWeight:800, fontSize:"0.6rem", textTransform:"uppercase" }}>Sentinel Analysis</div>
+              <p style={{ fontStyle:"italic", marginTop:4 }}>"{agents?.triage?.lastLog || "Evaluating NEWS2 thresholds..."}"</p>
+            </div>
           </div>
         </div>
 

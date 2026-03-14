@@ -107,19 +107,34 @@ export default function RiskAgent({ user, onLogout }) {
           </div>
         </div>
 
-        {/* Dynamic Risk Guardrails */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:16 }}>
-          {[
-            { l:"Cardiac Stability", v:risk === 'critical' ? 'Compromised' : 'Optimal', c: risk === 'critical' ? "#EF4444" : "#10B981", d:"R-R interval variance within bounds" },
-            { l:"Pulmonary Efficiency", v: vitals?.spo2 < 94 ? 'Reduced' : 'Normal', c: vitals?.spo2 < 94 ? "#F59E0B" : "#10B981", d:"O2 saturation above 94% threshold" },
-            { l:"Metabolic Status", v: vitals?.temp > 38 ? 'Febrile' : 'Afebrile', c: vitals?.temp > 38 ? "#F59E0B" : "#10B981", d:"Body temp within physiological limits" }
-          ].map((g, i) => (
-            <div key={i} className="card" style={{ padding:"20px" }}>
-              <div style={{ fontSize:"0.7rem", fontWeight:800, color:"#94A3B8", textTransform:"uppercase", marginBottom:8 }}>{g.l}</div>
-              <div style={{ fontSize:"1.2rem", fontWeight:800, color:g.c, marginBottom:4 }}>{g.v}</div>
-              <div style={{ fontSize:"0.75rem", color:"#64748B" }}>{g.d}</div>
+        {/* Dynamic & Orchestration Panel */}
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 400px", gap:16 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:16, flex:1 }}>
+            {[
+              { l:"Cardiac Stability", v:risk === 'critical' ? 'Compromised' : 'Optimal', c: risk === 'critical' ? "#EF4444" : "#10B981", d:"R-R interval variance within bounds" },
+              { l:"Pulmonary Efficiency", v: vitals?.spo2 < 94 ? 'Reduced' : 'Normal', c: vitals?.spo2 < 94 ? "#F59E0B" : "#10B981", d:"O2 saturation above 94% threshold" },
+              { l:"Metabolic Status", v: vitals?.temp > 38 ? 'Febrile' : 'Afebrile', c: vitals?.temp > 38 ? "#F59E0B" : "#10B981", d:"Body temp within physiological limits" },
+              { l:"Neuro-Entropy", v: "Stable", c: "#10B981", d:"Neural signal variance nominal" }
+            ].map((g, i) => (
+              <div key={i} className="card" style={{ padding:"20px" }}>
+                <div style={{ fontSize:"0.7rem", fontWeight:800, color:"#94A3B8", textTransform:"uppercase", marginBottom:8 }}>{g.l}</div>
+                <div style={{ fontSize:"1.2rem", fontWeight:800, color:g.c, marginBottom:4 }}>{g.v}</div>
+                <div style={{ fontSize:"0.75rem", color:"#64748B" }}>{g.d}</div>
+              </div>
+            ))}
+          </div>
+          <div className="card" style={{ background:"#0F172A", border:"none" }}>
+            <div className="card-header" style={{ background:"none", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
+              <span className="card-title" style={{ color:"white" }}>🕵 Risk Model Reasoning</span>
             </div>
-          ))}
+            <div className="card-body" style={{ color:"#94A3B8", fontSize:"0.82rem", lineHeight:1.6, padding:"15px" }}>
+              <div style={{ color:"#EF4444", fontWeight:800, fontSize:"0.6rem", textTransform:"uppercase" }}>Entropy Analyzer</div>
+              <p style={{ fontStyle:"italic", marginTop:4 }}>"{agents?.risk?.lastLog || "Analyzing multi-factor drift..."}"</p>
+              <p style={{ marginTop:12, fontSize:"0.75rem" }}>
+                Probability of deterioration (P_crit): <span style={{ color:"white", fontWeight:700 }}>{risk === 'critical' ? '0.94' : risk === 'high' ? '0.78' : '0.04'}</span>
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Agent Metrics */}

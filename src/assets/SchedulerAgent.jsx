@@ -104,6 +104,12 @@ export default function SchedulerAgent({ user, onLogout }) {
                    </p>
                 </div>
              </div>
+             <div className="card" style={{ background:"#0F172A", border:"none" }}>
+                <div className="card-body" style={{ color:"#94A3B8", fontSize:"0.8rem", padding:"12px" }}>
+                   <div style={{ color:"#10B981", fontWeight:800, fontSize:"0.6rem", textTransform:"uppercase" }}>Logistics Logic</div>
+                   <p style={{ fontStyle:"italic", marginTop:4 }}>"{agents?.scheduler?.lastLog || "Syncing calendar availability..."}"</p>
+                </div>
+             </div>
           </div>
         </div>
 

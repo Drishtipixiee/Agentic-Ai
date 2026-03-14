@@ -173,18 +173,33 @@ export default function MonitorAgent({ user, onLogout }) {
         </div>
 
         {/* Anomaly Detection Log */}
-        <div className="card">
-          <div className="card-header"><span className="card-title">⚠ Live Anomaly Detection Log</span></div>
-          <div style={{ padding:"16px", display:"flex", flexWrap:"wrap", gap:8 }}>
-            {(vanguard?.anomalies||[]).length > 0 ? vanguard.anomalies.map((a,i)=>(
-              <span key={i} style={{ padding:"5px 14px", borderRadius:99, background:"#FEF2F2", color:"#DC2626", fontSize:"0.78rem", fontWeight:700, border:"1px solid #FECACA" }}>
-                ⚡ {a}
-              </span>
-            )) : (
-              <span style={{ padding:"5px 14px", borderRadius:99, background:"#DCFCE7", color:"#16A34A", fontSize:"0.78rem", fontWeight:700 }}>
-                ✓ All parameters within normal range — No anomalies detected
-              </span>
-            )}
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 400px", gap:16, marginTop:16 }}>
+          <div className="card">
+            <div className="card-header"><span className="card-title">⚠ Live Anomaly Detection Log</span></div>
+            <div style={{ padding:"16px", display:"flex", flexWrap:"wrap", gap:8 }}>
+              {(vanguard?.anomalies||[]).length > 0 ? vanguard.anomalies.map((a,i)=>(
+                <span key={i} style={{ padding:"5px 14px", borderRadius:99, background:"#FEF2F2", color:"#DC2626", fontSize:"0.78rem", fontWeight:700, border:"1px solid #FECACA" }}>
+                  ⚡ {a}
+                </span>
+              )) : (
+                <span style={{ padding:"5px 14px", borderRadius:99, background:"#DCFCE7", color:"#16A34A", fontSize:"0.78rem", fontWeight:700 }}>
+                  ✓ All parameters within normal range — No anomalies detected
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="card" style={{ background:"#0F172A", border:"none" }}>
+            <div className="card-header" style={{ background:"none", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
+              <span className="card-title" style={{ color:"white" }}>🕵 Orchestration Feedback</span>
+            </div>
+            <div className="card-body" style={{ color:"#94A3B8", fontSize:"0.82rem", lineHeight:1.6, padding:"15px" }}>
+              <div style={{ color:"#3B82F6", fontWeight:800, marginBottom:4, fontSize:"0.65rem", textTransform:"uppercase" }}>Vanguard Logic</div>
+              <p style={{ fontStyle:"italic" }}>"{agents?.monitor?.lastLog || "Initiating stream sync..."}"</p>
+              <div style={{ marginTop:12, paddingTop:12, borderTop:"1px solid rgba(255,255,255,0.05)" }}>
+                 <p style={{ fontSize:"0.7rem" }}>Status: <span style={{ color:"#10B981" }}>Active Handover</span></p>
+                 <p style={{ fontSize:"0.7rem" }}>Next Agent: <span style={{ color:"#F59E0B" }}>SentinelTriage</span></p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

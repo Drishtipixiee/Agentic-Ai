@@ -105,9 +105,13 @@ if (!existingUser) {
 }
 const existingPatient = db.prepare('SELECT id FROM patients WHERE id = ?').get('RB-2024-0042');
 if (!existingPatient) {
-  db.prepare(`INSERT INTO patients (id, name, age, gender, ward, doctor, blood_group, height, weight, admitted, room)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
-    'RB-2024-0042','Roshani Singh', 21, 'Female', 'Remote Care', 'Dr. A. Mehta', 'O+', '162 cm', '56 kg', '12 Mar 2026', 'ICU-7'
+  db.prepare(`INSERT INTO patients (id, name, age, gender, ward, doctor, blood_group, height, weight, admitted, room, condition)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+    'RB-2024-0042','Roshani Singh', 21, 'Female', 'Remote Critical Care', 'Dr. A. Mehta', 'O+', '162 cm', '56 kg', '12 Mar 2026', 'ICU-7', 'Advanced Cardiac Monitoring'
+  );
+  db.prepare(`INSERT INTO patients (id, name, age, gender, ward, doctor, blood_group, height, weight, admitted, room, condition)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+    'PT-2024-0988','Amitabh Sharma', 54, 'Male', 'Cardiology Wing', 'Dr. S. Kulkarni', 'B+', '178 cm', '82 kg', '14 Mar 2026', 'Room-402', 'Post-MI Stabilization'
   );
 }
 
@@ -193,7 +197,11 @@ function generateECGPoint(hr) {
   return (pWave + qrsComplex + tWave + (Math.random() * 0.05)).toFixed(3);
 }
 
-// ─── AGENT STATE ──────────────────────────────────────────────────────────────
+let agentMetrics = {
+  monitor:    { status:'ACTIVE',   tasks:0, decisions:0, lastLog:'Stream connected — 250 Hz sampling active' },
+  triage:     { status:'ACTIVE',   tasks:0, decisions:0, lastLog:'NEWS2 computed — score updated' },
+  risk:       { status:'STANDBY',  tasks:0, decisions:0, lastLog:'Risk model initialized — watching thresholds' },
+  diagnostic: { status:'ACTIVE',   tasks:0, decisions:0, lastLog:'Differential generated — top 3 hypotheses' },
   escalation: { status:'STANDBY',  tasks:0, decisions:0, lastLog:'Emergency API warm — ready to dispatch' },
   scheduler:  { status:'STANDBY',  tasks:0, decisions:0, lastLog:'Queue empty — waiting for non-critical risk triggers' },
 };
@@ -252,51 +260,55 @@ setInterval(() => {
   if (history.length > 60) history.shift();
 
   // --- STRONG MULTI-AGENT ORCHESTRATION ENGINE ---
+  const patient = db.prepare('SELECT * FROM patients WHERE id = ?').get('RB-2024-0042');
+  const news2 = computeNEWS2(currentVitals);
+
   if (risk === 'critical' || risk === 'high') {
     // Stage 1: Detection
     agentMetrics.monitor.tasks++;
-    agentMetrics.monitor.lastLog = `HIGH_FREQ: Sampling 250Hz. SpO2 desaturation confirmed: ${currentVitals.spo2}%`;
+    agentMetrics.monitor.lastLog = `HIGH_FREQ: Monitoring ${patient.name}. SpO2 desaturation: ${currentVitals.spo2}%. Detected on ${wearableDevices.appleWatch.signal} link.`;
     
     // Stage 2: Classification
     agentMetrics.triage.tasks++;
-    agentMetrics.triage.lastLog = `PRIORITY: NEWS2 escalated to ${computeNEWS2(currentVitals)}. Pathway: ${risk==='critical'?'CODE_BLUE':'SEPSIS_SIX'}`;
+    agentMetrics.triage.lastLog = `PRIORITY: NEWS2 Score: ${news2}. ${patient.name} exhibits acute respiratory distress. Applying ${risk==='critical'?'CODE_BLUE':'SEPSIS_SIX'} clinical pathway.`;
     
     // Stage 3: Risk Fusion
     agentMetrics.risk.status = 'ACTIVE';
     agentMetrics.risk.tasks++;
-    agentMetrics.risk.lastLog = `ANALYZER: Neural entropy Φ=${(Math.random()*0.5+0.4).toFixed(2)}. Instability threshold breached.`;
+    agentMetrics.risk.lastLog = `ANALYZER: Neural entropy Φ=${(Math.random()*0.5+0.4).toFixed(2)}. ${patient.name} condition high-risk based on multi-factor vital drift.`;
     
     // Stage 4: Logical Reasoning (Diagnostic)
     agentMetrics.diagnostic.status = 'ACTIVE';
     agentMetrics.diagnostic.tasks++;
-    agentMetrics.diagnostic.lastLog = `LOGOS: Reasoning through vitals... Differential Diagnosis pending.`;
+    agentMetrics.diagnostic.lastLog = `LOGOS: Reasoning for ${patient.name}... Suspected Acute Hypoxemia secondary to pulmonary compromise. Confidence: 92%.`;
     
     // Stage 5: Rapid Intervention
     agentMetrics.escalation.status = 'ACTIVE';
     agentMetrics.escalation.decisions++;
-    agentMetrics.escalation.lastLog = `GUARDIAN: Triggering Multi-Channel Emergency Pipeline (PSAP/SMS).`;
+    agentMetrics.escalation.lastLog = `GUARDIAN: Triggering emergency coordination for ${patient.name}. RapidSOS dispatch initiated. Stakeholders paged.`;
 
-    // Scheduler on standby for emergencies
     agentMetrics.scheduler.status = 'STANDBY';
   } else if (risk === 'medium') {
     agentMetrics.monitor.tasks++;
     agentMetrics.triage.tasks++;
     agentMetrics.risk.status = 'ACTIVE';
+    agentMetrics.monitor.lastLog = `OBSERVE: ${patient.name} vitals drifting. Signal quality nominal.`;
+    agentMetrics.triage.lastLog = `TRIAGE: NEWS2 is ${news2}. Escalating review priority for ${patient.name}.`;
     
     // Proactive Scheduling Phase
     agentMetrics.scheduler.status = 'ACTIVE';
     agentMetrics.scheduler.tasks++;
     if (agentMetrics.monitor.tasks % 100 === 0) {
       agentMetrics.scheduler.decisions++;
-      agentMetrics.scheduler.lastLog = 'AUTONOMOUS: GCal slot found. Urgent review booked with cardiologist.';
-      io.emit('alert', { type: 'info', message: '📅 SchedulerAgent: Pre-emptive clinic booking complete.' });
+      agentMetrics.scheduler.lastLog = `AUTONOMOUS: Booking urgent review for ${patient.name} with ${patient.doctor} via GCal at ${new Date(Date.now() + 3600000).toLocaleTimeString()}.`;
+      io.emit('alert', { type: 'info', message: `📅 Scheduler: Urgent appointment booked for ${patient.name}.` });
     }
   } else {
     // Normal Baseline
     agentMetrics.monitor.tasks++;
     agentMetrics.triage.tasks++;
-    agentMetrics.monitor.lastLog = 'SYSTEM: Signal nominal. Routine observability active.';
-    agentMetrics.triage.lastLog = 'SYSTEM: Patient stable. Routine triage interval.';
+    agentMetrics.monitor.lastLog = `SYSTEM: Homeostatic state for ${patient.name}. 250Hz sampling stable.`;
+    agentMetrics.triage.lastLog = `SYSTEM: Patient ${patient.name} is stable. NEWS2 Score: ${news2}.`;
     agentMetrics.risk.status = 'STANDBY';
     agentMetrics.diagnostic.status = 'STANDBY';
     agentMetrics.escalation.status = 'STANDBY';
@@ -600,8 +612,14 @@ app.post('/api/speech-response', async (req, res) => {
 
   let responseText = '';
   try {
+    const patient = db.prepare('SELECT * FROM patients WHERE id = ?').get('RB-2024-0042');
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    const prompt = `You are SvasthAI, an intelligent medical AI assistant. Current patient vitals: HR=${vitals.hr}, SpO2=${vitals.spo2}%, Temp=${vitals.temp}°C, Risk=${risk}. User query: "${text}". Respond concisely in 2-3 sentences with medical insight. Be professional and helpful.`;
+    const prompt = `You are SvasthAI, an intelligent clinical assistant. 
+    Current Patient: ${patient.name}, ${patient.age}y/o, Ward: ${patient.ward}.
+    Vitals: HR=${vitals.hr}bpm, SpO2=${vitals.spo2}%, Temp=${vitals.temp}°C, Risk=${risk.toUpperCase()}.
+    Scheduler: Next review at 12:45 PM with ${patient.doctor}.
+    User query: "${text}". 
+    Respond as if giving a bedside verbal briefing. Be concise, medical-grade, and professional. Mention specific patient stats and time if relevant.`;
     const result = await model.generateContent(prompt);
     responseText = result.response.text();
   } catch(e) {

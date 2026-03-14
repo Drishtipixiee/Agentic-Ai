@@ -136,7 +136,7 @@ export default function Navbar({ user, onLogout, risk: propRisk }) {
     recognition.onend = () => setListening(false);
     recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
-      setSpeechResp("Processing: " + transcript);
+      setSpeechResp("Clinical Query: " + transcript);
       try {
         const res = await fetch(`${API_BASE}/api/speech-response`, {
           method: "POST",
@@ -144,14 +144,20 @@ export default function Navbar({ user, onLogout, risk: propRisk }) {
           body: JSON.stringify({ text: transcript })
         });
         const data = await res.json();
-        const reply = data.response || "Unable to process query.";
+        const reply = data.response || "I'm sorry, I couldn't retrieve the clinical context at this time.";
         setSpeechResp(reply);
+        
+        // Premium Speech Output
         const utterance = new SpeechSynthesisUtterance(reply);
-        utterance.rate = 0.95;
-        utterance.pitch = 1;
+        utterance.rate = 0.9;
+        utterance.pitch = 1.05;
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.name.includes("Google") || v.name.includes("Female"));
+        if (preferredVoice) utterance.voice = preferredVoice;
+        
         window.speechSynthesis.speak(utterance);
-        addToast("info", `🎙 AI: "${reply.substring(0, 80)}..." `);
-      } catch(e) { setSpeechResp("Error processing speech."); }
+        addToast("info", `🎙 SvasthAI Briefing: ${reply.substring(0, 60)}...`);
+      } catch(e) { setSpeechResp("Error: Laboratory link failure."); }
     };
     recognition.start();
   };

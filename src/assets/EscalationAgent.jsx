@@ -148,6 +148,12 @@ export default function EscalationAgent({ user, onLogout }) {
                         </div>
                       ))}
                    </div>
+                   <div className="card" style={{ background:"#0F172A", border:"none", marginTop:16 }}>
+                      <div className="card-body" style={{ color:"#94A3B8", fontSize:"0.8rem", padding:"12px" }}>
+                         <div style={{ color:"#EC4899", fontWeight:800, fontSize:"0.6rem", textTransform:"uppercase" }}>Guardian Logic</div>
+                         <p style={{ fontStyle:"italic", marginTop:4 }}>"{agents?.escalation?.lastLog || "Monitoring emergency triggers..."}"</p>
+                      </div>
+                   </div>
                 </div>
              </div>
 

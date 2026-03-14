@@ -172,25 +172,37 @@ export default function Dashboard({ user, onLogout }) {
   return (
     <div className="page-layout">
       <Navbar user={user} onLogout={onLogout} risk={risk} />
-      <div style={{ background: risk==="critical"?"#FEF2F2":risk==="high"?"#FFFBEB":"#F0F9FF", borderBottom:"1px solid #E2E8F0", padding:"8px 24px", display:"flex", alignItems:"center", gap:16, justifyContent:"space-between" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:16 }}>
-          <span style={{ fontWeight:700, fontSize:"0.82rem", color:"#334155" }}>👤 Roshani Singh · RB-2024-0042 · ICU-7</span>
-          <span style={{ fontSize:"0.78rem", color:"#64748B" }}>Scenario: <strong>{scenario}</strong></span>
-          <span style={{ padding:"2px 10px", borderRadius:99, fontSize:"0.7rem", fontWeight:700,
-            background: rcBg[risk]||"#F0FDF4", color: rcMap[risk]||"#166534",
-            border:`1px solid ${rcMap[risk]||"#16a34a"}40` }}>
-            ● {risk?.toUpperCase()||"STABLE"}
-          </span>
+      <div style={{ background: "white", borderBottom:"1px solid #E2E8F0", padding:"12px 24px", display:"flex", alignItems:"center", gap:16, justifyContent:"space-between", boxShadow:"0 4px 6px -1px rgba(0,0,0,0.02)" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:20 }}>
+          <div style={{ width:48, height:48, borderRadius:12, background:"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1.5rem", border:"1.5px solid #E2E8F0" }}>👩</div>
+          <div>
+            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+              <h2 style={{ fontSize:"1.1rem", fontWeight:800, color:"#1E293B" }}>Roshani Singh</h2>
+              <span style={{ fontSize:"0.65rem", fontWeight:800, padding:"2px 8px", borderRadius:6, background:"#F1F5F9", color:"#64748B", border:"1px solid #E2E8F0" }}>RB-2024-0042</span>
+            </div>
+            <div style={{ fontSize:"0.75rem", color:"#64748B", marginTop:2, display:"flex", gap:12 }}>
+              <span><strong>Age:</strong> 21y</span>
+              <span><strong>Ward:</strong> ICU-7 (Critical Care)</span>
+              <span><strong>Dr:</strong> A. Mehta</span>
+            </div>
+          </div>
         </div>
-        <div style={{ display:"flex", gap:8 }}>
-          <button className="btn btn-primary" style={{ fontSize:"0.78rem", padding:"6px 14px", background:"#3b82f6" }} 
-            onClick={() => fetch(`${API}/api/wearable/sync`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({provider:'Strava'})})}>
-            🔄 Sync Wearable (Strava)
-          </button>
-          <button className="btn btn-danger" style={{ fontSize:"0.78rem", padding:"6px 14px" }} onClick={sendStress} disabled={stressLoading}>
-            {stressLoading ? "⚡ Injecting..." : "⚡ Inject Crisis"}
-          </button>
-          <button className="btn btn-ghost" style={{ fontSize:"0.78rem", padding:"6px 14px" }} onClick={() => fetch(`${API}/api/reset`,{method:"POST"})}>Reset</button>
+
+        <div style={{ display:"flex", alignItems:"center", gap:24 }}>
+          <div style={{ textAlign:"right" }}>
+             <div style={{ fontSize:"0.6rem", fontWeight:800, color:"#94A3B8", textTransform:"uppercase", letterSpacing:"0.05em" }}>Current Deployment</div>
+             <div style={{ fontSize:"0.8rem", fontWeight:700, color: rcMap[risk]||"#166534" }}>● {scenario}</div>
+          </div>
+          <div className="navbar-sep" style={{ height:30 }} />
+          <div style={{ display:"flex", gap:8 }}>
+            <button className="btn btn-primary" style={{ fontSize:"0.78rem", padding:"6px 14px", background:"#6366F1" }} 
+              onClick={() => fetch(`${API}/api/wearable/sync`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({provider:'Apple Watch Ultra'})})}>
+              🔄 Sync Wearable
+            </button>
+            <button className="btn btn-danger" style={{ fontSize:"0.78rem", padding:"6px 14px" }} onClick={sendStress} disabled={stressLoading}>
+              {stressLoading ? "⚡ Injecting Crisis..." : "⚡ Inject Crisis"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -290,6 +302,28 @@ export default function Dashboard({ user, onLogout }) {
                 </div>
               ))}
             </div>
+            {/* Status Log */}
+               <div className="card" style={{ background:"#0F172A", border:"none" }}>
+                 <div className="card-header" style={{ background:"none", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
+                   <span className="card-title" style={{ color:"white", fontSize:"0.78rem" }}>🕵 Autonomous Orchestration Feed</span>
+                 </div>
+                 <div style={{ padding:16, display:"flex", flexDirection:"column", gap:14, maxHeight:320, overflowY:"auto" }}>
+                   {Object.entries(agents).map(([id, ag]) => (
+                     <div key={id} style={{ display:"flex", gap:12 }}>
+                        <div style={{ width:24, height:24, borderRadius:6, background: ag.status==='ACTIVE'?'rgba(16,185,129,0.1)':'rgba(148,163,184,0.1)', display:"flex", alignItems:"center", justifyContent:"center", fontSize:"0.8rem", flexShrink:0 }}>
+                           {id==='monitor'?'◉':id==='triage'?'◈':id==='risk'?'◆':id==='diagnostic'?'◇':id==='escalation'?'◎':'📅'}
+                        </div>
+                        <div style={{ flex:1 }}>
+                           <div style={{ display:"flex", justifyContent:"space-between", marginBottom:2 }}>
+                              <span style={{ fontSize:"0.68rem", fontWeight:800, color: ag.status==='ACTIVE'?'#10B981':'#94A3B8', textTransform:"uppercase" }}>{id}Agent</span>
+                              <span style={{ fontSize:"0.6rem", color:"rgba(255,255,255,0.3)" }}>SECURE_LINK</span>
+                           </div>
+                           <p style={{ fontSize:"0.78rem", color:"#CBD5E1", lineHeight:1.4 }}>{ag.lastLog || 'Initializing...'}</p>
+                        </div>
+                     </div>
+                   ))}
+                 </div>
+               </div>
           </div>
 
           <div className="card" style={{ display:"flex", flexDirection:"column" }}>

@@ -106,17 +106,22 @@ export default function DiagnosticAgent({ user, onLogout }) {
                 </div>
              </div>
 
-             {/* Web Speech Prompt */}
-             <div className="card" style={{ background:"linear-gradient(135deg, #F5F3FF, #EDE9FE)" }}>
+              {/* Web Speech Prompt */}
+              <div className="card" style={{ background:"linear-gradient(135deg, #F5F3FF, #EDE9FE)" }}>
                 <div className="card-body" style={{ display:"flex", alignItems:"center", gap:20 }}>
-                   <div style={{ width:50, height:50, borderRadius:"50%", background:"#8B5CF6", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1.5rem" }}>🎙</div>
-                   <div>
-                      <h4 style={{ fontSize:"0.95rem", fontWeight:700, color:"#2E1065" }}>Voice Consultation Enabled</h4>
-                      <p style={{ fontSize:"0.82rem", color:"#5B21B6", marginTop:2 }}>Ask SvasthAI: "Explain the diagnosis for Roshani Singh" or "What is the recommended treatment?"</p>
-                   </div>
-                   <button className="btn btn-primary" style={{ marginLeft:"auto", background:"#8B5CF6" }}>Open Voice Assistant</button>
+                  <div style={{ width:50, height:50, borderRadius:"50%", background:"#8B5CF6", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1.5rem" }}>🎙</div>
+                  <div style={{ flex:1 }}>
+                    <h4 style={{ fontSize:"0.95rem", fontWeight:700, color:"#2E1065" }}>Voice Consultation Active</h4>
+                    <p style={{ fontSize:"0.82rem", color:"#5B21B6", marginTop:2 }}>Ask SvasthAI: "Give me the status of Roshani Singh" or "Brief me on the clinical rationale."</p>
+                  </div>
+                  <div className="card" style={{ background:"#0F172A", border:"none", minWidth:250 }}>
+                    <div className="card-body" style={{ color:"#94A3B8", fontSize:"0.8rem", padding:"12px" }}>
+                       <div style={{ color:"#8B5CF6", fontWeight:800, fontSize:"0.6rem", textTransform:"uppercase" }}>Diagnostic Logic</div>
+                       <p style={{ fontStyle:"italic", marginTop:4 }}>"{agents?.diagnostic?.lastLog || "Computing differential..."}"</p>
+                    </div>
+                  </div>
                 </div>
-             </div>
+              </div>
           </div>
 
           {/* Right Panel: XAI Flow */}
