@@ -12,10 +12,29 @@ export const speak = (text) => {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.rate = 0.95;
   utterance.pitch = 1.0;
+  
+  // Set Indian Female Voice
   const voices = window.speechSynthesis.getVoices();
-  const preferredVoice = voices.find(v => v.name.includes("Google") || v.name.includes("Female") || v.lang.includes("en"));
-  if (preferredVoice) utterance.voice = preferredVoice;
+  const indianFemale = voices.find(v => (v.lang === "en-IN" || v.name.includes("India")) && v.name.includes("Female")) ||
+                       voices.find(v => v.lang === "en-IN") ||
+                       voices.find(v => v.name.includes("Female"));
+                       
+  if (indianFemale) utterance.voice = indianFemale;
   window.speechSynthesis.speak(utterance);
+};
+
+// Acoustic Bio-Alert System
+const playBeep = (freq = 440, duration = 0.2) => {
+  const context = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = context.createOscillator();
+  const gain = context.createGain();
+  osc.connect(gain);
+  gain.connect(context.destination);
+  osc.type = "sine";
+  osc.frequency.value = freq;
+  osc.start();
+  gain.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + duration);
+  osc.stop(context.currentTime + duration);
 };
 
 export function getSocket() {
@@ -174,10 +193,25 @@ export default function Navbar({ user, onLogout, risk: propRisk }) {
     recognition.start();
   };
 
+  useEffect(() => {
+    if (risk === "critical") {
+      const int = setInterval(() => {
+        playBeep(880, 0.1);
+        setTimeout(() => playBeep(660, 0.1), 150);
+      }, 800);
+      speak("Emergency. Critical physiological deterioration detected. Guardian agent initiating protocol Delta.");
+      return () => clearInterval(int);
+    }
+  }, [risk]);
+
   const stopSpeech = () => {
     if (recognitionRef.current) recognitionRef.current.stop();
     window.speechSynthesis.cancel();
-    setListening(false);
+  };
+
+  const toggleListening = () => {
+    if (listening) stopSpeech();
+    else startSpeech();
   };
 
   const initials = user?.name?.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2) || "DR";

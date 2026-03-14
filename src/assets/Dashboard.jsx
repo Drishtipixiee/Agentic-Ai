@@ -139,8 +139,18 @@ export default function Dashboard({ user, onLogout }) {
   }, []);
 
   useEffect(() => {
-    speak("Welcome to the SvasthAI Clinical Command Center. System is autonomously monitoring Roshani Singh across 6 vital parameters. The multi-agent orchestration mesh is active and ready for intervention.");
+    speak("SvasthAI Assistant active. I am autonomously narrating the clinical orchestration. Currently monitoring Roshani Singh. All 5 primary agents are synchronised and in a state of high readiness.");
   }, []);
+
+  // Autonomous Narration for Agent Handover
+  useEffect(() => {
+    const handovers = Object.entries(agents).filter(([_, ag]) => ag.status === "ACTIVE");
+    if (handovers.length > 0) {
+      const activeAgent = handovers[0][0];
+      const log = agents[activeAgent].lastLog;
+      if (log) speak(`${activeAgent.toUpperCase()} Agent is now leading. Strategic reasoning: ${log}`);
+    }
+  }, [agents]);
 
   const sendStress = async () => {
     setStressLoading(true);
@@ -174,7 +184,7 @@ export default function Dashboard({ user, onLogout }) {
   const rcBg  = { stable:"#DCFCE7", medium:"#FEF9C3", high:"#FFEDD5", critical:"#FEF2F2" };
 
   return (
-    <div className="page-layout">
+    <div className="page-layout" style={{ display: "flex", visibility: "visible", opacity: 1 }}>
       <Navbar user={user} onLogout={onLogout} risk={risk} />
       <div style={{ background: "white", borderBottom:"1px solid #E2E8F0", padding:"12px 24px", display:"flex", alignItems:"center", gap:16, justifyContent:"space-between", boxShadow:"0 4px 6px -1px rgba(0,0,0,0.02)" }}>
         <div style={{ display:"flex", alignItems:"center", gap:20 }}>
