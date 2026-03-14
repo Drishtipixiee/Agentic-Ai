@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar, { useVitals } from "./Navbar";
+import Navbar, { useVitals, speak } from "./Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -23,6 +23,10 @@ export default function EscalationAgent({ user, onLogout }) {
   useEffect(() => {
     fetchAlerts();
     const int = setInterval(fetchAlerts, 5000);
+
+    // AI Voice Intro
+    speak("Escalation Guardian active. I am authorized to autonomously coordinate emergency services, trigger RapidSOS protocols, and manage multi-channel alerts during critical physiological events.");
+
     return () => clearInterval(int);
   }, []);
 

@@ -6,6 +6,18 @@ import "./Shared.css";
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 let socketInstance = null;
 
+export const speak = (text) => {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.95;
+  utterance.pitch = 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const preferredVoice = voices.find(v => v.name.includes("Google") || v.name.includes("Female") || v.lang.includes("en"));
+  if (preferredVoice) utterance.voice = preferredVoice;
+  window.speechSynthesis.speak(utterance);
+};
+
 export function getSocket() {
   if (!socketInstance) {
     socketInstance = io(API_BASE, { transports: ["websocket", "polling"] });

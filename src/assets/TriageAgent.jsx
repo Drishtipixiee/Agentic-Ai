@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar, { useVitals } from "./Navbar";
+import Navbar, { useVitals, speak } from "./Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -19,6 +19,10 @@ export default function TriageAgent({ user, onLogout }) {
     };
     fetch_();
     const int = setInterval(fetch_, 3000);
+
+    // AI Voice Intro
+    speak("Triage Agent active. I am autonomously computing National Early Warning Scores and routing patients through validated clinical pathways based on physiological drift.");
+
     return () => clearInterval(int);
   }, []);
 

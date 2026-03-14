@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar, { useVitals } from "./Navbar";
+import Navbar, { useVitals, speak } from "./Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -19,6 +19,10 @@ export default function RiskAgent({ user, onLogout }) {
     };
     fetch_();
     const int = setInterval(fetch_, 3000);
+
+    // AI Voice Intro
+    speak("Risk Analyzer initialized. I utilize multi-factor neural entropy models to predict clinical deterioration up to 30 minutes before symptoms manifest.");
+
     return () => clearInterval(int);
   }, []);
 

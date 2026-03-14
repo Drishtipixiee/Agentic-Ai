@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar, { useVitals } from "./Navbar";
+import Navbar, { useVitals, speak } from "./Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -21,6 +21,10 @@ export default function MonitorAgent({ user, onLogout }) {
     };
     fetch_();
     const int = setInterval(fetch_, 2500);
+
+    // AI Voice Intro
+    speak("Entering Vanguard Monitor. This agent specializes in high-frequency 250 Hertz signal ingestion and real-time noise filtering for early anomaly detection.");
+
     return () => clearInterval(int);
   }, []);
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar, { useVitals } from "./Navbar";
+import Navbar, { useVitals, speak } from "./Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -20,6 +20,10 @@ export default function SchedulerAgent({ user, onLogout }) {
     };
     fetchSchedules();
     const int = setInterval(fetchSchedules, 5000);
+
+    // AI Voice Intro
+    speak("Logistics Agent online. I autonomously optimize patient review cycles and synchronise consultations with specialists via the Google Calendar API based on predictive risk trends.");
+
     return () => clearInterval(int);
   }, []);
 

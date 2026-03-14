@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar, { useVitals } from "./Navbar";
+import Navbar, { useVitals, speak } from "./Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -34,7 +34,11 @@ export default function DiagnosticAgent({ user, onLogout }) {
 
   useEffect(() => {
     if (vitals && !diagData) fetchDiagnosis();
-    const int = setInterval(fetchDiagnosis, 15000); // Update every 15s or manually
+    const int = setInterval(fetchDiagnosis, 15000); 
+
+    // AI Voice Intro
+    speak("Diagnostic Agent online. I am reasoning through clinical vitals using deep knowledge graphs to generate evidence-based differential diagnoses and ICD-10 mappings.");
+
     return () => clearInterval(int);
   }, [vitals]);
 

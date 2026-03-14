@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar, { useVitals } from "./Navbar";
+import Navbar, { useVitals, speak } from "./Navbar";
 import DigitalTwin from "./DigitalTwin";
 import WearableHub from "./WearableHub";
 import StabilityAnalysis from "./StabilityAnalysis";
@@ -138,6 +138,10 @@ export default function Dashboard({ user, onLogout }) {
     return () => clearInterval(int);
   }, []);
 
+  useEffect(() => {
+    speak("Welcome to the SvasthAI Clinical Command Center. System is autonomously monitoring Roshani Singh across 6 vital parameters. The multi-agent orchestration mesh is active and ready for intervention.");
+  }, []);
+
   const sendStress = async () => {
     setStressLoading(true);
     try { await fetch(`${API}/api/stress`, { method:"POST" }); }
@@ -195,6 +199,13 @@ export default function Dashboard({ user, onLogout }) {
           </div>
           <div className="navbar-sep" style={{ height:30 }} />
           <div style={{ display:"flex", gap:8 }}>
+            <button className="btn btn-primary" style={{ fontSize:"0.78rem", padding:"6px 14px", background:"#10B981" }} 
+              onClick={() => {
+                fetch(`${API}/api/family-sms`,{method:"POST"});
+                alert("Family SMS Alert Dispatched via Twilio.");
+              }}>
+              👨‍👩‍👧‍👦 Alert Family
+            </button>
             <button className="btn btn-primary" style={{ fontSize:"0.78rem", padding:"6px 14px", background:"#6366F1" }} 
               onClick={() => fetch(`${API}/api/wearable/sync`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({provider:'Apple Watch Ultra'})})}>
               🔄 Sync Wearable

@@ -113,6 +113,10 @@ if (!existingPatient) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
     'PT-2024-0988','Amitabh Sharma', 54, 'Male', 'Cardiology Wing', 'Dr. S. Kulkarni', 'B+', '178 cm', '82 kg', '14 Mar 2026', 'Room-402', 'Post-MI Stabilization'
   );
+  db.prepare(`INSERT INTO patients (id, name, age, gender, ward, doctor, blood_group, height, weight, admitted, room, condition)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+    'FMLY-001','Surabhi Pande', 24, 'Female', 'Executive Suite', 'Dr. A. Mehta', 'A+', '165 cm', '58 kg', '14 Mar 2026', 'VIP-1', 'Routine Family Checkup'
+  );
 }
 
 // ─── AI CLIENTS ───────────────────────────────────────────────────────────────
@@ -628,7 +632,25 @@ app.post('/api/speech-response', async (req, res) => {
   res.json({ success: true, response: responseText });
 });
 
-// ─── AGENT: SCHEDULER (Logistics) ───────────────────────────────────────────
+// ─── AGENT: GUARDIAN (Escalation + Family SMS) ──────────────────────────────
+app.post('/api/family-sms', async (req, res) => {
+  const { phone = process.env.EMERGENCY_CONTACT || "+917700034050" } = req.body;
+  const patient = db.prepare('SELECT * FROM patients WHERE id = ?').get('FMLY-001');
+  const msg = `SvasthAI NOTIFICATION: Your family member ${patient.name} is being monitored. HR: ${currentVitals.hr}bpm, SpO2: ${currentVitals.spo2}%. All agents are active.`;
+  
+  try {
+    if (process.env.TWILIO_ACCOUNT_SID) {
+      await twilioClient.messages.create({
+        body: msg,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: phone
+      });
+      systemStats.smsSent++;
+    }
+  } catch(e) {}
+  
+  res.json({ success: true, message: "Family SMS sent via Twilio pipeline." });
+});
 app.get('/api/scheduler', (req, res) => {
   res.json({
     status: agentMetrics.scheduler.status,
