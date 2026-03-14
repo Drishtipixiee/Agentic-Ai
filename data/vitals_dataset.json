@@ -1,0 +1,9 @@
+[
+  { "id": 1, "hr": 72, "spo2": 98, "respi": 16, "temp": 36.6, "sbp": 118, "dbp": 78, "hrv": 52, "context": "Resting" },
+  { "id": 2, "hr": 75, "spo2": 98, "respi": 17, "temp": 36.7, "sbp": 120, "dbp": 80, "hrv": 50, "context": "Resting" },
+  { "id": 3, "hr": 105, "spo2": 95, "respi": 22, "temp": 37.2, "sbp": 135, "dbp": 88, "hrv": 38, "context": "Mild Exercise" },
+  { "id": 4, "hr": 130, "spo2": 91, "respi": 28, "temp": 38.4, "sbp": 155, "dbp": 98, "hrv": 22, "context": "Hypoxia Onset" },
+  { "id": 5, "hr": 115, "spo2": 89, "respi": 30, "temp": 38.8, "sbp": 145, "dbp": 92, "hrv": 18, "context": "Critical Respiratory Failure" },
+  { "id": 6, "hr": 88, "spo2": 94, "respi": 20, "temp": 37.5, "sbp": 125, "dbp": 82, "hrv": 42, "context": "Post-Stabilization" },
+  { "id": 7, "hr": 78, "spo2": 97, "respi": 18, "temp": 36.9, "sbp": 118, "dbp": 78, "hrv": 55, "context": "Recovering" }
+]
