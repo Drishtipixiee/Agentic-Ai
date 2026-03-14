@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar, { useVitals } from "./Navbar";
 
-const API = "http://localhost:3000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 export default function EscalationAgent({ user, onLogout }) {
   const navigate = useNavigate();
