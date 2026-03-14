@@ -27,3 +27,4 @@ dist-ssr
 .env
 *.db
 svashthai.db
+.vercel
