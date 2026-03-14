@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar, { useVitals } from "./Navbar";
 import DigitalTwin from "./DigitalTwin";
 import WearableHub from "./WearableHub";
+import StabilityAnalysis from "./StabilityAnalysis";
 import "../App.css";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
@@ -324,9 +325,19 @@ export default function Dashboard({ user, onLogout }) {
           </div>
         </div>
 
-        {/* Analytic Row 2: Digital Twin & Wearable Hub */}
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+        {/* Analytic Row 2: Digital Twin & Stability hub */}
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 180px 1fr", gap:16, marginBottom: 24 }}>
            <DigitalTwin twinData={telemetry.twin} />
+           <div style={{ display:"flex", flexDirection:"column", gap:16, justifyContent: "center" }}>
+              <div style={{ padding: 12, background: "rgba(99,102,241,0.05)", border: "1px dashed rgba(99,102,241,0.2)", borderRadius: 12, textAlign: "center" }}>
+                 <div style={{ fontSize: "0.55rem", color: "#6366F1", fontWeight: 800 }}>ANALYSIS ACTIVE</div>
+                 <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#1E293B" }}>98.4%</div>
+                 <div style={{ fontSize: "0.5rem", color: "#64748B" }}>Neural Confidence</div>
+              </div>
+           </div>
+           <StabilityAnalysis history={history} risk={risk} />
+        </div>
+        <div className="card" style={{ marginBottom: 24 }}>
            <WearableHub wearables={telemetry.wearables} />
         </div>
 
@@ -389,17 +400,6 @@ export default function Dashboard({ user, onLogout }) {
             </div>
           </div>
 
-          <div className="card">
-            <div className="card-header"><span className="card-title">👨‍⚕️ HITL Queue</span></div>
-            <div className="card-body" style={{ maxHeight:200, overflowY:"auto" }}>
-              {hitlQueue.length === 0 ? <div style={{ color:"#94A3B8", fontSize:"0.8rem" }}>Queue clear.</div> : hitlQueue.slice(0, 3).map((q, i) => (
-                <div key={i} style={{ borderBottom: "1px solid #F1F5F9", paddingBottom: 8, marginBottom: 8 }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700 }}>{q.action}</div>
-                  <div style={{ fontSize: '0.65rem', color: '#64748B' }}>{q.status}</div>
-                </div>
-              ))}
-            </div>
-          </div>
 
           <div className="card">
             <div className="card-header"><span className="card-title">🔔 Recent Alerts</span></div>

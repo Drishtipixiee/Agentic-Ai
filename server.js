@@ -155,16 +155,25 @@ let wearableDevices = {
 // ─── PHYSIOLOGICAL FEEDBACK LOOPS ───────────────────────────────────────────
 function driftPhysiology() {
   const s = SCENARIOS[scenarioRef];
-  // Drift towards scenario targets
+  
+  // High-fidelity drift towards scenario targets
   const targetHR = rand(s.hrC[0], s.hrC[1]);
   const targetSPO2 = rand(s.spo2C[0], s.spo2C[1]);
   
-  currentVitals.hr += (targetHR - currentVitals.hr) * 0.05;
-  currentVitals.spo2 += (targetSPO2 - currentVitals.spo2) * 0.05;
+  currentVitals.hr += (targetHR - currentVitals.hr) * 0.08;
+  currentVitals.spo2 += (targetSPO2 - currentVitals.spo2) * 0.04;
   
-  // Baroreceptor-like compensation
-  if (currentVitals.spo2 < 92) currentVitals.respi += 0.5;
-  else if (currentVitals.respi > 18) currentVitals.respi -= 0.2;
+  // Clinical Analogy: Baroreceptor-like compensation
+  if (currentVitals.spo2 < 92) {
+    currentVitals.respi += 0.8; // Hypoxic drive
+    currentVitals.ansTone = 'Sympathetic Dominant';
+  } else {
+    currentVitals.ansTone = 'Homeostatic Parasympathetic';
+    if (currentVitals.respi > 18) currentVitals.respi -= 0.3;
+  }
+
+  // Neural Accuracy Simulation
+  currentVitals.confidence = +((currentVitals.spo2 / 100) * 0.9 + 0.1).toFixed(3);
 }
 
 // ─── SIGNAL ARTIFACT GENERATOR ───────────────────────────────────────────────
@@ -263,9 +272,11 @@ setInterval(() => {
     agentMetrics.escalation.status = 'ACTIVE';
     agentMetrics.risk.status = 'ACTIVE';
     agentMetrics.escalation.decisions++;
+    agentMetrics.escalation.lastLog = `ORCHESTRATION: Initiating ${risk === 'critical' ? 'RapidSOS E911' : 'Physician Alert'} pipeline.`;
   } else {
     agentMetrics.escalation.status = 'STANDBY';
     agentMetrics.risk.status = 'STANDBY';
+    agentMetrics.escalation.lastLog = 'SYSTEM: Monitoring for autonomic deregulation.';
   }
 
   // Store vitals to DB every 10 ticks

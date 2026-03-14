@@ -18,47 +18,75 @@ export default function DigitalTwin({ twinData }) {
 
   return (
     <div className="card" style={{ background: '#0F172A', color: 'white', border: '1px solid #1E293B' }}>
-      <div className="card-header" style={{ borderBottom: '1px solid #1E293B' }}>
+      <div className="card-header" style={{ borderBottom: '1px solid #1E293B', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '1px', background: 'linear-gradient(90deg, transparent, #6366F1, transparent)', animation: 'scan-line 3s linear infinite' }}></div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Brain size={18} color="#8B5CF6" />
-          <span className="card-title" style={{ color: 'white' }}>Digital Twin Pro — V2.4</span>
+          <Brain size={18} color="#8B5CF6" className="animate-pulse" />
+          <span className="card-title" style={{ color: 'white', letterSpacing: '1px' }}>DIGITAL TWIN PRO <span style={{ color: '#6366F1' }}>V4.2</span></span>
         </div>
-        <span style={{ fontSize: '0.6rem', padding: '3px 8px', background: '#1E293B', borderRadius: 99, color: '#94A3B8', fontWeight: 700 }}>HIGH FIDELITY</span>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <span style={{ fontSize: '0.55rem', padding: '2px 6px', border: '1px solid #10B981', borderRadius: 4, color: '#10B981', fontWeight: 700 }}>LIVE SYNC</span>
+          <span style={{ fontSize: '0.55rem', padding: '3px 8px', background: '#1E293B', borderRadius: 99, color: '#94A3B8', fontWeight: 700 }}>NEURAL MAPPING ACTIVE</span>
+        </div>
       </div>
       
       <div className="card-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 20 }}>
         {/* Anatomical Model */}
-        <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
-          <svg viewBox="0 0 100 200" width="120" height="240">
+        <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', background: 'radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%)' }}>
+          <svg viewBox="0 0 100 200" width="140" height="280">
+            <defs>
+              <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#1E293B" />
+                <stop offset="50%" stopColor="#334155" />
+                <stop offset="100%" stopColor="#1E293B" />
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* Scanning Ring */}
+            <g transform="translate(50, 100)">
+               <ellipse rx="45" ry="15" fill="none" stroke="#6366F1" strokeWidth="0.5" opacity="0.3">
+                  <animate attributeName="ry" values="10;20;10" dur="4s" repeatCount="indefinite" />
+                  <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite" />
+               </ellipse>
+            </g>
+
             {/* Body Outline */}
-            <path d="M50,15 L65,35 L62,70 L38,70 L35,35 Z" fill="#1E293B" opacity="0.6" />
-            <rect x="35" y="70" width="30" height="90" rx="10" fill="#1E293B" opacity="0.6" />
+            <path d="M50,15 L65,35 L62,70 L65,110 L60,160 L40,160 L35,110 L38,70 L35,35 Z" fill="url(#bodyGradient)" opacity="0.8" stroke="#334155" strokeWidth="0.5" />
             
-            {/* Skeletal Structure Analogy */}
-            <line x1="50" y1="35" x2="50" y2="160" stroke="#334155" strokeWidth="1" strokeDasharray="2 2" />
+            {/* Neural System */}
+            <line x1="50" y1="35" x2="50" y2="160" stroke="#6366F1" strokeWidth="0.5" strokeDasharray="1 3" opacity="0.5" />
+
+            {/* Brain */}
+            <g transform="translate(50, 25)">
+              <circle r="6" fill="#8B5CF6" filter="url(#glow)">
+                <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" />
+              </circle>
+            </g>
 
             {/* Heart */}
             <g onMouseEnter={() => setHoveredOrgan('Heart')} onMouseLeave={() => setHoveredOrgan(null)}>
-              <circle cx="55" cy="85" r="7" fill={getOrganColor(twinData.organs[0].status)} style={{ cursor: 'pointer', filter: 'blur(1px)' }}>
-                <animate attributeName="r" values="6;8;6" dur={`${60/twinData.temperature}s`} repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.7;1;0.7" dur="0.8s" repeatCount="indefinite" />
+              <circle cx="53" cy="85" r="5" fill={getOrganColor(twinData.organs[0].status)} filter="url(#glow)" style={{ cursor: 'pointer' }}>
+                <animate attributeName="r" values="4;6;4" dur={`${60/twinData.temperature}s`} repeatCount="indefinite" />
               </circle>
-              {hoveredOrgan === 'Heart' && (
-                <rect x="65" y="75" width="40" height="20" rx="4" fill="white" />
-              )}
+              {/* Pulse waves */}
+              <circle cx="53" cy="85" r="5" fill="none" stroke={getOrganColor(twinData.organs[0].status)} strokeWidth="0.5" opacity="0">
+                 <animate attributeName="r" values="5;15" dur="1.5s" repeatCount="indefinite" />
+                 <animate attributeName="opacity" values="0.6;0" dur="1.5s" repeatCount="indefinite" />
+              </circle>
             </g>
 
             {/* Lungs */}
             <g onMouseEnter={() => setHoveredOrgan('Lungs')} onMouseLeave={() => setHoveredOrgan(null)}>
-              <path d="M42,80 Q50,70 58,80" fill="none" stroke={getOrganColor(twinData.organs[1].status)} strokeWidth="5" strokeLinecap="round" style={{ cursor: 'pointer' }}>
-                <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite" />
+              <path d="M42,85 Q50,75 58,85 L58,105 Q50,115 42,105 Z" fill={`${getOrganColor(twinData.organs[1].status)}22`} stroke={getOrganColor(twinData.organs[1].status)} strokeWidth="1" style={{ cursor: 'pointer' }}>
+                <animate attributeName="opacity" values="0.3;0.7;0.3" dur="4s" repeatCount="indefinite" />
               </path>
             </g>
-
-            {/* Brain/Neural */}
-            <circle cx="50" cy="25" r="8" fill="#8B5CF6" opacity="0.4">
-               <animate attributeName="opacity" values="0.2;0.5;0.2" dur="4s" repeatCount="indefinite" />
-            </circle>
           </svg>
           
           {/* Overlay Stats */}
