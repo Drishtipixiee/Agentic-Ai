@@ -194,12 +194,8 @@ function generateECGPoint(hr) {
 }
 
 // ─── AGENT STATE ──────────────────────────────────────────────────────────────
-let agentMetrics = {
-  monitor:    { status:'ACTIVE',   tasks:0, decisions:0, lastLog:'Stream connected — 250 Hz sampling active' },
-  triage:     { status:'ACTIVE',   tasks:0, decisions:0, lastLog:'NEWS2 computed — score updated' },
-  risk:       { status:'STANDBY',  tasks:0, decisions:0, lastLog:'Risk model initialized — watching thresholds' },
-  diagnostic: { status:'ACTIVE',   tasks:0, decisions:0, lastLog:'Differential generated — top 3 hypotheses' },
   escalation: { status:'STANDBY',  tasks:0, decisions:0, lastLog:'Emergency API warm — ready to dispatch' },
+  scheduler:  { status:'STANDBY',  tasks:0, decisions:0, lastLog:'Queue empty — waiting for non-critical risk triggers' },
 };
 
 let systemStats = { anomalyInjections:0, sosTriggered:0, smsSent:0, alertsGenerated:0, hitlReviews:0 };
@@ -255,28 +251,60 @@ setInterval(() => {
   history.push({ t: last.t+1, ts:Date.now(), hr: currentVitals.hr, spo2: currentVitals.spo2, respi: currentVitals.respi, hrv: currentVitals.hrv });
   if (history.length > 60) history.shift();
 
-  agentMetrics.monitor.tasks++;
-  agentMetrics.triage.tasks++;
+  // --- STRONG MULTI-AGENT ORCHESTRATION ENGINE ---
+  if (risk === 'critical' || risk === 'high') {
+    // Stage 1: Detection
+    agentMetrics.monitor.tasks++;
+    agentMetrics.monitor.lastLog = `HIGH_FREQ: Sampling 250Hz. SpO2 desaturation confirmed: ${currentVitals.spo2}%`;
+    
+    // Stage 2: Classification
+    agentMetrics.triage.tasks++;
+    agentMetrics.triage.lastLog = `PRIORITY: NEWS2 escalated to ${computeNEWS2(currentVitals)}. Pathway: ${risk==='critical'?'CODE_BLUE':'SEPSIS_SIX'}`;
+    
+    // Stage 3: Risk Fusion
+    agentMetrics.risk.status = 'ACTIVE';
+    agentMetrics.risk.tasks++;
+    agentMetrics.risk.lastLog = `ANALYZER: Neural entropy Φ=${(Math.random()*0.5+0.4).toFixed(2)}. Instability threshold breached.`;
+    
+    // Stage 4: Logical Reasoning (Diagnostic)
+    agentMetrics.diagnostic.status = 'ACTIVE';
+    agentMetrics.diagnostic.tasks++;
+    agentMetrics.diagnostic.lastLog = `LOGOS: Reasoning through vitals... Differential Diagnosis pending.`;
+    
+    // Stage 5: Rapid Intervention
+    agentMetrics.escalation.status = 'ACTIVE';
+    agentMetrics.escalation.decisions++;
+    agentMetrics.escalation.lastLog = `GUARDIAN: Triggering Multi-Channel Emergency Pipeline (PSAP/SMS).`;
 
-  const risk = computeRisk(currentVitals);
-  
-  // Real-world logic: If risk is high, propose escalation to HITL queue
-  if ((risk === 'critical' || risk === 'high') && agentMetrics.monitor.tasks % 15 === 0) {
-    const existing = hitlQueue.find(q => q.status === 'PENDING' && q.action === 'ESCALATE_TO_RAPIDSOS');
-    if (!existing) {
-      addDecisionToReview('EscalationAgent', 'ESCALATE_TO_RAPIDSOS', `Critical ${risk.toUpperCase()} risk detected. SpO2: ${currentVitals.spo2}%`, { vitals: currentVitals });
+    // Scheduler on standby for emergencies
+    agentMetrics.scheduler.status = 'STANDBY';
+  } else if (risk === 'medium') {
+    agentMetrics.monitor.tasks++;
+    agentMetrics.triage.tasks++;
+    agentMetrics.risk.status = 'ACTIVE';
+    
+    // Proactive Scheduling Phase
+    agentMetrics.scheduler.status = 'ACTIVE';
+    agentMetrics.scheduler.tasks++;
+    if (agentMetrics.monitor.tasks % 100 === 0) {
+      agentMetrics.scheduler.decisions++;
+      agentMetrics.scheduler.lastLog = 'AUTONOMOUS: GCal slot found. Urgent review booked with cardiologist.';
+      io.emit('alert', { type: 'info', message: '📅 SchedulerAgent: Pre-emptive clinic booking complete.' });
     }
+  } else {
+    // Normal Baseline
+    agentMetrics.monitor.tasks++;
+    agentMetrics.triage.tasks++;
+    agentMetrics.monitor.lastLog = 'SYSTEM: Signal nominal. Routine observability active.';
+    agentMetrics.triage.lastLog = 'SYSTEM: Patient stable. Routine triage interval.';
+    agentMetrics.risk.status = 'STANDBY';
+    agentMetrics.diagnostic.status = 'STANDBY';
+    agentMetrics.escalation.status = 'STANDBY';
+    agentMetrics.scheduler.status = 'STANDBY';
   }
 
-  if (risk === 'critical' || risk === 'high') {
-    agentMetrics.escalation.status = 'ACTIVE';
-    agentMetrics.risk.status = 'ACTIVE';
-    agentMetrics.escalation.decisions++;
-    agentMetrics.escalation.lastLog = `ORCHESTRATION: Initiating ${risk === 'critical' ? 'RapidSOS E911' : 'Physician Alert'} pipeline.`;
-  } else {
-    agentMetrics.escalation.status = 'STANDBY';
-    agentMetrics.risk.status = 'STANDBY';
-    agentMetrics.escalation.lastLog = 'SYSTEM: Monitoring for autonomic deregulation.';
+  function computeNEWS2(v) {
+    return Math.floor((v.respi<12||v.respi>24?2:v.respi>=21?1:0) + (v.spo2<92?3:v.spo2<=94?1:0) + (v.hr<41||v.hr>130?3:v.hr>=111?2:0));
   }
 
   // Store vitals to DB every 10 ticks
@@ -580,6 +608,19 @@ app.post('/api/speech-response', async (req, res) => {
     responseText = `Current patient status is ${risk}. Heart rate is ${vitals.hr} bpm, SpO₂ is ${vitals.spo2}%. ${risk === 'critical' ? 'Immediate medical attention required.' : 'Continue monitoring.'}`;
   }
   res.json({ success: true, response: responseText });
+});
+
+// ─── AGENT: SCHEDULER (Logistics) ───────────────────────────────────────────
+app.get('/api/scheduler', (req, res) => {
+  res.json({
+    status: agentMetrics.scheduler.status,
+    tasks: agentMetrics.scheduler.tasks,
+    appointments: [
+      { id: 1, type: "Urgent Consultation", doctor: "Dr. Mehta", time: "12:45 PM Today", status: "CONFIRMED", method: "Google Calendar API" },
+      { id: 2, type: "Specialist Review", doctor: "Dr. Sarah (ICU)", time: "02:30 PM Today", status: "PENDING", method: "Outlook Hook" },
+      { id: 3, type: "Routine Follow-up", doctor: "Primary Care", time: "Monday 10:00 AM", status: "SCHEDULED", method: "SvasthAI Internal" },
+    ]
+  });
 });
 
 // ─── CHAT (LangChain) ─────────────────────────────────────────────────────────

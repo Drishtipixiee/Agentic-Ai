@@ -8,6 +8,7 @@ import TriageAgent from "./assets/TriageAgent";
 import RiskAgent from "./assets/RiskAgent";
 import DiagnosticAgent from "./assets/DiagnosticAgent";
 import EscalationAgent from "./assets/EscalationAgent";
+import SchedulerAgent from "./assets/SchedulerAgent";
 import MapPage from "./assets/MapPage";
 import "./App.css";
 
@@ -38,6 +39,7 @@ function App() {
         <Route path="/risk" element={<ProtectedRoute user={user}><RiskAgent user={user} onLogout={handleLogout} /></ProtectedRoute>} />
         <Route path="/diagnosis" element={<ProtectedRoute user={user}><DiagnosticAgent user={user} onLogout={handleLogout} /></ProtectedRoute>} />
         <Route path="/escalation" element={<ProtectedRoute user={user}><EscalationAgent user={user} onLogout={handleLogout} /></ProtectedRoute>} />
+        <Route path="/scheduler" element={<ProtectedRoute user={user}><SchedulerAgent user={user} onLogout={handleLogout} /></ProtectedRoute>} />
         <Route path="/map" element={<ProtectedRoute user={user}><MapPage user={user} onLogout={handleLogout} /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

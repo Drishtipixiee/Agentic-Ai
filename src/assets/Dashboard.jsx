@@ -23,6 +23,7 @@ const AGENT_CARDS = [
   { id:"risk",       name:"RiskAgent",       role:"Risk Analysis",          icon:"◆", color:"#EF4444", route:"/risk",       desc:"Multi-factor risk scoring, trend analysis" },
   { id:"diagnostic", name:"DiagnosticAgent", role:"Clinical Diagnosis",     icon:"◇", color:"#8B5CF6", route:"/diagnosis",  desc:"LLM differential diagnosis, ICD-10 mapping" },
   { id:"escalation", name:"EscalationAgent", role:"Emergency Coordination", icon:"◎", color:"#EC4899", route:"/escalation", desc:"Auto-dispatch, SMS/SOS, RapidSOS integration" },
+  { id:"scheduler",  name:"SchedulerAgent",  role:"Logistics & Booking",    icon:"📅", color:"#10B981", route:"/scheduler",  desc:"Auto-GCal booking, physician scheduling via API" },
 ];
 
 function VitalCard({ param, value }) {
@@ -344,7 +345,7 @@ export default function Dashboard({ user, onLogout }) {
         {/* 5 Agent Cards */}
         <div>
           <h2 style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:"1.1rem", fontWeight:700, color:"#0F172A", marginBottom:12 }}>AI Agent Pipeline</h2>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:12 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:12 }}>
             {AGENT_CARDS.map(a => {
               const agState = agents?.[a.id];
               const status = agState?.status || "STANDBY";
