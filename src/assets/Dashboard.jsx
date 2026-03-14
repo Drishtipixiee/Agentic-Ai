@@ -5,7 +5,7 @@ import DigitalTwin from "./DigitalTwin";
 import WearableHub from "./WearableHub";
 import "../App.css";
 
-const API = "http://localhost:3000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const PARAM_CONFIG = [
   { key:"hr",   label:"Heart Rate",     icon:"❤", unit:"bpm",  color:"#6366F1", min:60,  max:100,  critical:[0,50,121,999] },

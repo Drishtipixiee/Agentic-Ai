@@ -74,4 +74,22 @@ The system uses `data/vitals_dataset.json`, a curated collection of **7 real-wor
 
 ---
 
+## ☁️ Deployment Guide
+
+### **1. Frontend (Vercel)**
+The SvasthAI UI can be deployed as a static site:
+1.  Connect your GitHub repo to **Vercel**.
+2.  Set the **Build Command**: `npm run build`.
+3.  Set the **Output Directory**: `dist`.
+4.  **CRITICAL**: Add the Environment Variable `VITE_API_URL` and point it to your deployed Backend URL.
+
+### **2. Backend (Render / Railway)**
+Since the backend uses **Socket.io** and **SQLite**, it requires a "Web Service" (not serverless):
+1.  Deploy to **Render.com** or **Railway.app**.
+2.  Set the **Start Command**: `node server.js`.
+3.  Add all keys from `.env` to the service environment variables.
+4.  For Render, add a **Disk Space** mount at `/svashthai.db` if you want persistent data between restarts.
+
+---
+
 **Developed by Antigravity AI — Bridging the gap between Data and Life.**
