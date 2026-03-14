@@ -108,11 +108,11 @@
 
 .login-hero-text h1 {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 3.2rem;
+  font-size: clamp(2rem, 5vh, 2.8rem);
   font-weight: 800;
   color: white;
-  line-height: 1.15;
-  margin: 0 0 20px;
+  line-height: 1.1;
+  margin: 0 0 15px;
   letter-spacing: -1px;
 }
 .login-gradient-text {
@@ -123,9 +123,9 @@
 }
 .login-hero-text p {
   color: rgba(148, 163, 184, 0.85);
-  font-size: 1rem;
-  line-height: 1.7;
-  margin: 0 0 40px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0 0 30px;
   max-width: 420px;
 }
 
