@@ -1,10 +1,10 @@
-# 🏥 SvasthAI: Autonomous Clinical Intelligence V4.2
+# SvasthAI: Autonomous Clinical Intelligence V4.2
 
 **SvasthAI** is a high-fidelity, autonomous multi-agent ecosystem designed to eliminate the "latency gap" in critical care. It transforms reactive monitoring into proactive clinical action by fusing 250Hz biosensor telemetry with Large Language Model (LLM) reasoning.
 
 ---
 
-## 🤖 System Architecture
+##  System Architecture
 
 ```
 📡 VanguardAgent  →  ◈ SentinelAgent  →  ◆ RiskAnalyzer  →  ◇ LogosAgent  →  ◎ GuardianAgent
@@ -14,7 +14,7 @@
 
 ---
 
-## 🌟 Wondrous V4.2 Enhancements
+##  Wondrous V4.2 Enhancements
 
 ### **1. Digital Twin Pro (Holo-Scan Edition)**
 A high-fidelity anatomical digital twin that visualizes neural load, cardiovascular stress, and pulmonary oxygenation in real-time. Features a custom **Holo-Scanner** animation that simulates deep-tissue neural mapping.
@@ -30,7 +30,7 @@ The simulation engine now models the Autonomic Nervous System (ANS). It dynamica
 
 ---
 
-## ⚙️ Trigger Mechanisms: The "When"
+## Trigger Mechanisms: The "When"
 
 The system moves from "Monitoring" to "Active Intervention" when specific **Clinical Triggers** are met:
 
@@ -44,7 +44,7 @@ The system moves from "Monitoring" to "Active Intervention" when specific **Clin
 
 ---
 
-## 💾 Data & Architecture
+## Data & Architecture
 
 ### **Database (The "Where")**
 - **Persistence**: Powered by **SQLite** (`svasthai.db`), located in the project root.
@@ -59,7 +59,7 @@ The system uses `data/vitals_dataset.json`, a curated collection of **7 real-wor
 
 ---
 
-## ☁️ Deployment Guide
+## Deployment Guide
 
 ### **1. Frontend (Vercel)**
 Deploy as a static site. Set `VITE_API_URL` to your Backend URL.
@@ -68,5 +68,3 @@ Deploy as a static site. Set `VITE_API_URL` to your Backend URL.
 Requires a persistent "Web Service" for Socket.io and SQLite. Add `.env` keys to service variables.
 
 ---
-
-**Developed by Antigravity AI — Bridging the gap between Data and Life.**
